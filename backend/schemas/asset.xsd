@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="asset">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="name" type="xs:string"/>
+        <xs:element name="category_id" type="xs:string"/>
+        <xs:element name="serial_number" type="xs:string" minOccurs="0"/>
+        <xs:element name="qr_code" type="xs:string" minOccurs="0"/>
+        <xs:element name="acquisition_date" type="xs:date" minOccurs="0"/>
+        <xs:element name="acquisition_cost" type="xs:decimal" minOccurs="0"/>
+        <xs:element name="condition" type="xs:string" minOccurs="0"/>
+        <xs:element name="location" type="xs:string" minOccurs="0"/>
+        <xs:element name="is_bookable" type="xs:boolean" minOccurs="0"/>
+        <xs:element name="department_id" type="xs:string" minOccurs="0"/>
+        <xs:element name="custom_field_values" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="photo_url" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
