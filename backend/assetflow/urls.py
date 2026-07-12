@@ -19,4 +19,8 @@ urlpatterns = [
     path('', include('apps.allocations.urls')),
     path('', include('apps.bookings.urls')),
     path('', include('apps.maintenance.urls')),
+    path('', include('apps.audit.urls')),
+    path('', include('apps.dashboard.urls')),
+    path('', include('apps.reports.urls')),
+    path('', include('apps.notifications.urls')),
 ]

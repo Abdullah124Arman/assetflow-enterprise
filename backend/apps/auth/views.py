@@ -19,6 +19,7 @@ def _generate_auth_response(user):
     refresh = RefreshToken.for_user(user)
     access = refresh.access_token
     
+    import datetime
     # Store refresh token hash in DB
     RefreshTokenModel.objects.create(
         user=user,

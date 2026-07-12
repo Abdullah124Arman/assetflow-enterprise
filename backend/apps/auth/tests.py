@@ -15,9 +15,9 @@ def department():
 def test_signup_creates_employee(client, department):
     xml_data = f"""
     <auth_request>
-      <name>Test User</name>
       <email>test@example.com</email>
       <password>SecurePass123!</password>
+      <name>Test User</name>
       <department_id>{department.id}</department_id>
       <role>admin</role> <!-- This should be ignored -->
     </auth_request>
