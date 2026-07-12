@@ -9,6 +9,34 @@ class AssetFlowXMLRenderer(XMLRenderer):
     """
     root_tag_name = 'response'
 
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        rendered = super().render(data, accepted_media_type, renderer_context)
+        if not rendered:
+            return rendered
+
+        if renderer_context and 'view' in renderer_context:
+            view = renderer_context['view']
+            schema_name = getattr(view, 'schema_name', None)
+            if schema_name:
+                from django.conf import settings
+                import os
+                import xmlschema
+                from rest_framework.exceptions import ValidationError
+                from lxml import etree
+                
+                schema_path = os.path.join(settings.BASE_DIR, 'schemas', f'{schema_name}.xsd')
+                if os.path.exists(schema_path):
+                    try:
+                        parser = etree.XMLParser(resolve_entities=False, no_network=True, load_dtd=False)
+                        xml_bytes = rendered if isinstance(rendered, bytes) else rendered.encode('utf-8')
+                        tree = etree.fromstring(xml_bytes, parser)
+                        schema = xmlschema.XMLSchema(schema_path)
+                        schema.validate(tree)
+                    except Exception as exc:
+                        raise ValidationError(f"Response XML does not validate against schema {schema_name}.xsd: {exc}")
+        return rendered
+
+
     def _to_xml(self, xml, data, parent_tag=None):
         if isinstance(data, (list, tuple)):
             item_tag = self.item_tag_name

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="response">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice>
+                    <xs:element name="data">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="kpis">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="available_assets" type="xs:integer"/>
+                                            <xs:element name="allocated_assets" type="xs:integer"/>
+                                            <xs:element name="active_bookings" type="xs:integer"/>
+                                            <xs:element name="pending_transfers" type="xs:integer"/>
+                                            <xs:element name="upcoming_returns" type="xs:integer"/>
+                                            <xs:element name="maintenance_today" type="xs:integer"/>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                                <xs:element name="overdue_returns">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="allocation" minOccurs="0" maxOccurs="unbounded">
+                                                <xs:complexType>
+                                                    <xs:sequence>
+                                                        <xs:element name="id" type="xs:string"/>
+                                                        <xs:element name="asset_tag" type="xs:string"/>
+                                                        <xs:element name="asset_name" type="xs:string"/>
+                                                        <xs:element name="holder_id" type="xs:string"/>
+                                                        <xs:element name="expected_return_date" type="xs:string"/>
+                                                        <xs:element name="days_overdue" type="xs:integer"/>
+                                                    </xs:sequence>
+                                                </xs:complexType>
+                                            </xs:element>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                                <xs:element name="recent_activity">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="activity" minOccurs="0" maxOccurs="unbounded">
+                                                <xs:complexType>
+                                                    <xs:sequence>
+                                                        <xs:element name="id" type="xs:string"/>
+                                                        <xs:element name="action" type="xs:string"/>
+                                                        <xs:element name="entity_type" type="xs:string"/>
+                                                        <xs:element name="entity_id" type="xs:string" minOccurs="0"/>
+                                                        <xs:element name="created_at" type="xs:string"/>
+                                                    </xs:sequence>
+                                                </xs:complexType>
+                                            </xs:element>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="error">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="code" type="xs:string"/>
+                                <xs:element name="message" type="xs:string"/>
+                                <xs:element name="details" type="xs:string"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:choice>
+                <xs:element name="meta" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="timestamp" type="xs:string" minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

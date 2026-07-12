@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="response">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice>
+                    <xs:element name="data">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="departments">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="department" minOccurs="0" maxOccurs="unbounded">
+                                                <xs:complexType>
+                                                    <xs:sequence>
+                                                        <xs:element name="name" type="xs:string"/>
+                                                        <xs:element name="total_allocations" type="xs:integer"/>
+                                                    </xs:sequence>
+                                                </xs:complexType>
+                                            </xs:element>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="error">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="code" type="xs:string"/>
+                                <xs:element name="message" type="xs:string"/>
+                                <xs:element name="details" type="xs:string"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:choice>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
