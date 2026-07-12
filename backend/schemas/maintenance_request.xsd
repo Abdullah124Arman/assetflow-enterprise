@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- Type definitions -->
+  <xs:simpleType name="PriorityType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="low"/>
+      <xs:enumeration value="medium"/>
+      <xs:enumeration value="high"/>
+      <xs:enumeration value="critical"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="ActionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="approve"/>
+      <xs:enumeration value="reject"/>
+      <xs:enumeration value="assign"/>
+      <xs:enumeration value="resolve"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- POST /maintenance-requests -->
+  <xs:element name="maintenance_request">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="asset_id" type="xs:string"/>
+        <xs:element name="issue" type="xs:string"/>
+        <xs:element name="priority" type="PriorityType" minOccurs="0"/>
+        <xs:element name="photo_url" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- PATCH /maintenance-requests/:id -->
+  <xs:element name="maintenance_request_action">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="action" type="ActionType"/>
+        <xs:element name="technician_name" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

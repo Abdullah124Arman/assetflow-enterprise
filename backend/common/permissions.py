@@ -42,3 +42,17 @@ class IsAuthenticated(permissions.BasePermission):
     """
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_authenticated)
+
+class IsAssetManagerOrAdmin(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated and request.user.role in ['admin', 'asset_manager'])
+
+class IsDeptScoped(permissions.BasePermission):
+    """
+    Permission that allows any authenticated user, but the view must scope by department_id 
+    for dept_head and employee.
+    This doesn't block the request, it just ensures they are authenticated. The view 
+    must handle the scoping.
+    """
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated)

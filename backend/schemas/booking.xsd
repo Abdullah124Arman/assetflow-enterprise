@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="booking">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:string"/>
+                <xs:element name="resource_asset_id" type="xs:string"/>
+                <xs:element name="booked_by" type="xs:string"/>
+                <xs:element name="start_time" type="xs:dateTime"/>
+                <xs:element name="end_time" type="xs:dateTime"/>
+                <xs:element name="status">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="upcoming"/>
+                            <xs:enumeration value="ongoing"/>
+                            <xs:enumeration value="completed"/>
+                            <xs:enumeration value="cancelled"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="purpose" type="xs:string" minOccurs="0"/>
+                <xs:element name="reminder_sent" type="xs:boolean"/>
+                <xs:element name="created_at" type="xs:dateTime"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
