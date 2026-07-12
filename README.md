@@ -1,105 +1,162 @@
 # AssetFlow - Enterprise Asset & Resource Management System
 
 ## Overview
-AssetFlow is a centralized ERP module for tracking, allocating, and maintaining physical assets and shared resources — industry-agnostic (offices, schools, hospitals, factories, agencies). It replaces spreadsheets/paper logs with structured lifecycles, booking, maintenance, and audit workflows.
+AssetFlow is a centralized ERP module for tracking, allocating, and maintaining physical assets and shared resources. It is industry-agnostic (designed for offices, schools, hospitals, factories, agencies) and replaces spreadsheets and manual tracking with structured lifecycles, resource booking, maintenance kanban boards, and audit workflows. 
 
-## Key Features
-- **Asset Registration & Directory**: Single source of truth for asset state with comprehensive search and filtering capabilities.
-- **Allocation & Transfer**: Ensures zero double-allocation of a single asset. Manage asset transfers and returns seamlessly.
-- **Resource Booking**: Calendar view for resource booking with built-in overlap validation to prevent double-booking.
-- **Maintenance Management**: Kanban-style workflow (Pending → Approved → Technician Assigned → In Progress → Resolved) for maintenance requests.
-- **Audit Cycles**: Create audit cycles, assign auditors, verify items, and auto-generate discrepancy reports.
-- **Reports & Analytics**: Insights into utilization, maintenance frequency, idle assets, and booking heatmaps.
-- **Notifications & Activity Logs**: Full audit trail of every state-changing action and real-time notifications for key events.
+AssetFlow provides a **single source of truth** for asset states and prevents issues like double-allocations and booking overlaps through strict database-level constraints.
 
-## Technology Stack
-**Frontend:**
-- React + Tailwind CSS (SPA)
-- Custom XML Parsing (`DOMParser` / `fast-xml-parser`)
+---
 
-**Backend:**
-- Python 3.12
-- Django 5 + Django REST Framework (DRF)
-- XML-only API (`djangorestframework-xml`), payload validation against XSD schemas (`lxml`, `xmlschema`)
-- Auth: JWT (access + refresh) via `djangorestframework-simplejwt`
-- Background Jobs: Celery + Celery Beat (overdue checks, reminders)
-- Real-time/Notifications: WebSocket (Django Channels)
+## 🛠 Technology Stack
 
-**Database:**
-- PostgreSQL (via Django ORM)
+### Backend
+- **Language & Framework**: Python 3.12, Django 5 + Django REST Framework (DRF)
+- **API Paradigm**: **XML-only REST API** (JSON is explicitly disabled). Every request and response uses XML payloads.
+- **Validation**: Payload validation against predefined **XSD schemas** using `lxml` and `xmlschema` before reaching business logic.
+- **Database**: PostgreSQL (via Django ORM) hosted on Neon. Uses advanced constraints like partial unique indexes and GiST exclusion constraints.
+- **Authentication**: JWT (Access & Refresh) via `djangorestframework-simplejwt`, token delivered inside an XML `<auth>` envelope.
+- **Background Jobs**: Celery + Celery Beat / Custom Django scheduler for overdue checks and booking reminders.
+- **Real-time**: WebSocket (Django Channels) for real-time notifications.
+- **Security**: XXE protection (entities/network disabled in `lxml`), rate limiting, parameterised queries.
 
-## User Roles (RBAC)
-- **Admin**: Full access. Manage org setup (departments, categories, role promotion), audit cycles, and org-wide analytics.
-- **Asset Manager**: Register/allocate assets, approve transfers/maintenance/audit resolution, approve returns.
-- **Department Head**: View department assets, approve department allocation/transfer requests, book resources.
-- **Employee**: View own assets, book resources, raise maintenance requests, initiate return/transfer.
+### Frontend
+- **Framework**: React 18 + Vite (SPA) + Tailwind CSS
+- **Data Layer**: Custom XML parsing (`DOMParser` / `fast-xml-parser`) for all API fetch operations.
 
-## Project Structure
+---
+
+## 🚀 Key Modules & Workflows
+
+### 1. Asset Lifecycle & Directory
+- Maintain a single source of truth for asset state: `Available`, `Allocated`, `Reserved`, `Under Maintenance`, `Lost`, `Retired`, or `Disposed`.
+- Robust search and filter by tag, serial, category, and department.
+- Maintains comprehensive allocation and maintenance history.
+
+### 2. Allocation & Transfer
+- **Double-Allocation Block**: Prevented at the DB level via `one_active_allocation_per_asset` partial unique index.
+- If an asset is already allocated, users can submit a **Transfer Request** that requires approval from an Asset Manager or Department Head.
+
+### 3. Resource Booking
+- Calendar view for booking shared bookable resources (e.g., projectors, meeting rooms).
+- **Overlap Validation**: Enforced at the DB level using PostgreSQL's GiST exclusion constraints. Overlapping requests are automatically rejected.
+
+### 4. Maintenance Kanban
+- Report issues for assets to enter the maintenance kanban workflow.
+- **States**: `Pending` → `Approved` (asset automatically flipped to `Under Maintenance`) → `Technician Assigned` → `In Progress` → `Resolved` (asset back to `Available`).
+
+### 5. Audit Cycles
+- Create scoped audits (by department/location and date range).
+- Auditors verify each asset as `Verified`, `Missing`, or `Damaged`.
+- Closing an audit cycle generates an automatic **Discrepancy Report** and bulk updates missing assets to `Lost` status.
+
+### 6. Reports & Dashboard
+- Visual KPI cards on the dashboard (Available, Allocated, Pending Transfers, Upcoming Returns).
+- Dynamic reports for departmental utilization, maintenance frequency, and most-used vs. idle assets.
+- Activity feeds for a full system audit trail.
+
+---
+
+## 🖥 Frontend Web Flow (Screens)
+
+AssetFlow is organized into a robust left-sidebar navigation layout containing 10 core screens:
+
+1. **Login/Signup**: Standard Auth. Sign-up creates standard Employee roles (elevated roles granted by Admins).
+2. **Dashboard**: KPI cards, overdue asset banners, and recent activity feed.
+3. **Organization Setup (Admin Only)**: Manage Departments, Categories (with custom fields), and Employee roles.
+4. **Assets**: Central directory for all assets with filtering and registration capabilities.
+5. **Allocation & Transfer**: Direct allocation or transfer request flows.
+6. **Resource Booking**: Calendar slot booking with visual conflict indicators.
+7. **Maintenance**: Kanban board for asset repair and upkeep.
+8. **Audit**: Scope definition and verification checklist for auditors.
+9. **Reports**: System utilization analytics and export functionalities.
+10. **Notifications**: Full activity log and real-time event feed (Alerts, Approvals, Bookings).
+
+---
+
+## 🔐 User Roles (RBAC)
+
+Role-Based Access Control is enforced server-side using middleware and row-level scoping (`department_id` filtering).
+
+- **Admin**: Full access. Manage org setup, promote employee roles, manage audit cycles, and view org-wide analytics.
+- **Asset Manager**: Register and allocate assets. Approve transfers, maintenance requests, and audit discrepancies.
+- **Department Head**: Manage their own department's assets, approve department-scoped allocations/transfers, book resources.
+- **Employee**: Base role. Can view assigned assets, book resources, raise maintenance requests, and initiate returns/transfers.
+
+---
+
+## 📂 Project Structure
+
 ```text
 assetflow-enterprise/
 ├── backend/
-│   ├── assetflow/            # Django project settings
-│   ├── apps/                 # Django apps (auth, org, assets, allocations, bookings, maintenance, audit, reports, notifications)
-│   ├── common/               # Custom DRF XML parsers, renderers, XSD validation, custom error handling
-│   ├── manage.py
-│   └── requirements.txt
+│   ├── assetflow/            # Django root (settings, urls, celery config)
+│   ├── apps/                 # Modular Django apps (auth, org, assets, allocations, bookings, maintenance, audit, reports, notifications)
+│   ├── common/               # Custom DRF XML parsers, renderers, XSD validation utilities
+│   ├── manage.py             # Django entry point
+│   └── requirements.txt      # Python dependencies
 ├── frontend/
 │   ├── src/
-│   │   ├── pages/            # 10 core screens
-│   │   ├── components/       # Reusable UI components
-│   │   ├── api/              # API clients for XML communication
-│   │   └── store/            # State management (auth, notifications)
-│   ├── package.json
-│   └── vite.config.js (or similar)
-├── schemas/                  # XSD files for request/response validation
-└── docs/                     # TRD, PRD, Architecture, and Schema documentation
+│   │   ├── pages/            # 10 core React screens
+│   │   ├── components/       # Shared UI components
+│   │   ├── api/              # XML-based API client wrappers
+│   │   └── store/            # State management (auth, notification feed)
+│   ├── package.json          # Node dependencies
+│   └── vite.config.js        # Vite bundler config
+├── schemas/                  # XML Schema Definitions (XSDs) used for API payload validation
+└── docs/                     # Product, Technical, Web Flow, and Schema reference documents
 ```
 
-## Getting Started
+---
+
+## ⚙️ Getting Started (Local Development)
+
 ### Prerequisites
 - Python 3.12+
 - Node.js (v18+)
-- PostgreSQL
-- Redis (for Celery and Channels)
+- PostgreSQL (with `btree_gist` extension enabled for booking overlaps)
+- Redis (optional, for Celery and Django Channels)
 
-### Backend Setup
-1. Navigate to the `backend` directory:
-   ```bash
-   cd backend
-   ```
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Or `venv\Scripts\activate` on Windows
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Set up the database and apply migrations:
-   ```bash
-   python manage.py migrate
-   ```
-5. Start the development server:
-   ```bash
-   python manage.py runserver
-   ```
+### 1. Backend Setup
+```bash
+# Navigate to backend
+cd backend
 
-### Frontend Setup
-1. Navigate to the `frontend` directory:
-   ```bash
-   cd frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-## API Documentation
-All API endpoints communicate exclusively via XML. Requests must have `Content-Type: application/xml` and `Accept: application/xml`. Every request and response is validated against the corresponding XSD schema located in the `/schemas` directory.
+# Install dependencies
+pip install -r requirements.txt
 
-Please refer to the `docs/` folder for detailed PRD, Architecture, TRD, and Schema definitions.
+# Setup environment variables (Create a .env file with DB credentials)
+# Ensure your PostgreSQL instance has the btree_gist extension created.
+
+# Run migrations
+python manage.py migrate
+
+# Start Django development server
+python manage.py runserver
+```
+
+### 2. Frontend Setup
+```bash
+# Navigate to frontend
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start Vite development server
+npm run dev
+```
+
+---
+
+## 📚 Documentation Reference
+
+For more deep-dive technical and product requirements, refer to the `docs/` directory:
+- **`AssetFlow_PRD.md`**: Product Requirements Document (Metrics, Roles, Scope).
+- **`AssetFlow_TRD.md`**: Technical Requirements (XML API contract, Constraints, Job triggers).
+- **`AssetFlow_Architecture.md`**: High-level system architecture and data pipelines.
+- **`AssetFlow_Schema.md`**: Complete PostgreSQL Database Schema DDL.
+- **`AssetFlow_WebFlow.md`**: Screen-by-screen frontend logic and user flows.
