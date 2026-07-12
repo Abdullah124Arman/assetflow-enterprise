@@ -118,3 +118,9 @@ REST_FRAMEWORK = {
     ],
     'EXCEPTION_HANDLER': 'common.exceptions.custom_exception_handler',
 }
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+}

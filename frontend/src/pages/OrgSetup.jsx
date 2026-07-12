@@ -24,31 +24,33 @@ export default function OrgSetup() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      if (activeTab === 'departments') {
-        const doc = await api.get('/departments');
-        const items = Array.from(doc.querySelectorAll('department')).map(node => ({
-          id: node.querySelector('id')?.textContent,
-          name: node.querySelector('name')?.textContent,
-          head: node.querySelector('head_name')?.textContent,
-          status: node.querySelector('status')?.textContent,
-        }));
-        setDepartments(items);
-      } else if (activeTab === 'categories') {
-        const doc = await api.get('/categories');
-        const items = Array.from(doc.querySelectorAll('category')).map(node => ({
-          id: node.querySelector('id')?.textContent,
-          name: node.querySelector('name')?.textContent,
-        }));
-        setCategories(items);
-      } else if (activeTab === 'employees') {
-        const doc = await api.get('/employees');
-        const items = Array.from(doc.querySelectorAll('employee')).map(node => ({
-          id: node.querySelector('id')?.textContent,
-          name: node.querySelector('name')?.textContent,
-          role: node.querySelector('role')?.textContent,
-        }));
-        setEmployees(items);
-      }
+      // Fetch all required data
+      const [deptDoc, catDoc, empDoc] = await Promise.all([
+        api.get('/departments'),
+        api.get('/categories'),
+        api.get('/employees')
+      ]);
+
+      const deptItems = Array.from(deptDoc.querySelectorAll('department, list-item')).map(node => ({
+        id: node.querySelector('id')?.textContent,
+        name: node.querySelector('name')?.textContent,
+        head: node.querySelector('head_name')?.textContent,
+        status: node.querySelector('status')?.textContent,
+      }));
+      setDepartments(deptItems);
+
+      const catItems = Array.from(catDoc.querySelectorAll('category, list-item')).map(node => ({
+        id: node.querySelector('id')?.textContent,
+        name: node.querySelector('name')?.textContent,
+      }));
+      setCategories(catItems);
+
+      const empItems = Array.from(empDoc.querySelectorAll('employee, list-item')).map(node => ({
+        id: node.querySelector('id')?.textContent,
+        name: node.querySelector('name')?.textContent,
+        role: node.querySelector('role')?.textContent,
+      }));
+      setEmployees(empItems);
     } catch (e) {
       console.error("Failed to fetch data", e);
     } finally {
@@ -205,12 +207,22 @@ export default function OrgSetup() {
                 <input required type="text" className="w-full p-2 border rounded" value={newDept.name} onChange={e => setNewDept({...newDept, name: e.target.value})} />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Head ID (Optional)</label>
-                <input type="text" className="w-full p-2 border rounded" value={newDept.head_id} onChange={e => setNewDept({...newDept, head_id: e.target.value})} />
+                <label className="block text-sm font-medium mb-1">Head (Optional)</label>
+                <select className="w-full p-2 border rounded bg-white" value={newDept.head_id} onChange={e => setNewDept({...newDept, head_id: e.target.value})}>
+                  <option value="">None</option>
+                  {employees.map(emp => (
+                    <option key={emp.id} value={emp.id}>{emp.name}</option>
+                  ))}
+                </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Parent Dept ID (Optional)</label>
-                <input type="text" className="w-full p-2 border rounded" value={newDept.parent_dept_id} onChange={e => setNewDept({...newDept, parent_dept_id: e.target.value})} />
+                <label className="block text-sm font-medium mb-1">Parent Department (Optional)</label>
+                <select className="w-full p-2 border rounded bg-white" value={newDept.parent_dept_id} onChange={e => setNewDept({...newDept, parent_dept_id: e.target.value})}>
+                  <option value="">None</option>
+                  {departments.map(dept => (
+                    <option key={dept.id} value={dept.id}>{dept.name}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Status</label>
