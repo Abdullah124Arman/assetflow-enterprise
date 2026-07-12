@@ -7,6 +7,17 @@ export class APIError extends Error {
   }
 }
 
+import { XMLBuilder } from 'fast-xml-parser';
+
+export const buildXml = (rootElement, obj) => {
+  const builder = new XMLBuilder({
+    ignoreAttributes: false,
+    format: true,
+  });
+  const xmlContent = builder.build(obj);
+  return `<${rootElement}>${xmlContent}</${rootElement}>`;
+};
+
 export const xmlRequest = async (method, endpoint, xmlBody = null, token = null) => {
   const headers = {
     'Accept': 'application/xml',
@@ -22,7 +33,7 @@ export const xmlRequest = async (method, endpoint, xmlBody = null, token = null)
     headers['Authorization'] = `Bearer ${authToken}`;
   }
 
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
   
   const options = {
     method,
@@ -68,6 +79,7 @@ export const api = {
   get: (endpoint) => xmlRequest('GET', endpoint),
   post: (endpoint, xmlString) => xmlRequest('POST', endpoint, xmlString),
   put: (endpoint, xmlString) => xmlRequest('PUT', endpoint, xmlString),
+  patch: (endpoint, xmlString) => xmlRequest('PATCH', endpoint, xmlString),
   delete: (endpoint) => xmlRequest('DELETE', endpoint),
 };
 

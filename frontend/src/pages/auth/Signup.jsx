@@ -6,11 +6,24 @@ export default function Signup() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    navigate('/login');
+    setError('');
+    setIsLoading(true);
+    try {
+      const { api, buildXml } = await import('../../api/client');
+      const xmlPayload = buildXml('auth_request', { email, password, name });
+      await api.post('/auth/signup', xmlPayload);
+      navigate('/login');
+    } catch (err) {
+      setError(err.message || 'Signup failed.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -57,7 +70,11 @@ export default function Signup() {
             By signing up, you will be assigned the base Employee role. Contact your Admin for promotion.
           </p>
 
-          <Button type="submit" className="w-full py-2.5 mt-2 text-base">Sign Up</Button>
+          {error && <p className="text-sm font-medium text-error text-center">{error}</p>}
+
+          <Button type="submit" disabled={isLoading} className="w-full py-2.5 mt-2 text-base">
+            {isLoading ? 'Signing Up...' : 'Sign Up'}
+          </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-tertiary">

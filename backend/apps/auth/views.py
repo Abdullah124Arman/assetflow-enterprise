@@ -1,5 +1,6 @@
 import hashlib
 import uuid
+import datetime
 from django.utils import timezone
 from rest_framework import views, status
 from rest_framework.response import Response
@@ -22,7 +23,7 @@ def _generate_auth_response(user):
     RefreshTokenModel.objects.create(
         user=user,
         token_hash=_hash_token(str(refresh)),
-        expires_at=timezone.datetime.fromtimestamp(refresh['exp'], tz=timezone.utc)
+        expires_at=datetime.datetime.fromtimestamp(refresh['exp'], tz=datetime.timezone.utc)
     )
     
     return Response({
