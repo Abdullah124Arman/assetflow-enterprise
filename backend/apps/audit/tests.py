@@ -46,15 +46,15 @@ def assets(db, category, department):
 @pytest.mark.django_db
 def test_create_audit_cycle(api_client, admin_user, department, assets):
     api_client.force_authenticate(user=admin_user)
-    data = {
-        "name": "Q3 Audit",
-        "scope_department_id": str(department.id),
-        "start_date": "2026-07-01",
-        "end_date": "2026-07-31"
-    }
-    # Using JSON content type here for testing convenience if DRF permits, or just relying on view's use of request.data.
-    # The actual server forces XML but DRF Test client can pass data directly.
-    response = api_client.post(reverse('audit_cycle_create'), data=data, format='json')
+    xml_data = f"""
+    <audit_cycle>
+      <name>Q3 Audit</name>
+      <scope_department_id>{department.id}</scope_department_id>
+      <start_date>2026-07-01</start_date>
+      <end_date>2026-07-31</end_date>
+    </audit_cycle>
+    """
+    response = api_client.post(reverse('audit_cycle_create'), data=xml_data, content_type='application/xml')
     assert response.status_code == status.HTTP_201_CREATED
     
     cycle = AuditCycle.objects.get(name="Q3 Audit")
@@ -67,10 +67,14 @@ def test_assign_auditor(api_client, admin_user, auditor_user, department):
     api_client.force_authenticate(user=admin_user)
     cycle = AuditCycle.objects.create(name="Q3 Audit", scope_department=department, start_date="2026-07-01", end_date="2026-07-31", created_by=admin_user)
     
-    data = {
-        "user_ids": [str(auditor_user.id)]
-    }
-    response = api_client.post(reverse('audit_cycle_auditors', kwargs={'pk': cycle.id}), data=data, format='json')
+    xml_data = f"""
+    <audit_cycle_auditors>
+      <user_ids>
+        <user_id>{auditor_user.id}</user_id>
+      </user_ids>
+    </audit_cycle_auditors>
+    """
+    response = api_client.post(reverse('audit_cycle_auditors', kwargs={'pk': cycle.id}), data=xml_data, content_type='application/xml')
     assert response.status_code == status.HTTP_200_OK
     assert AuditAuditor.objects.filter(audit_cycle=cycle, user=auditor_user).exists()
 
@@ -80,16 +84,20 @@ def test_update_audit_item_permission(api_client, admin_user, auditor_user, othe
     AuditAuditor.objects.create(audit_cycle=cycle, user=auditor_user)
     item = AuditItem.objects.create(audit_cycle=cycle, asset=assets[0])
 
-    data = {"verification": "verified"}
+    xml_data = """
+    <audit_item>
+      <verification>verified</verification>
+    </audit_item>
+    """
     
     # other user should fail
     api_client.force_authenticate(user=other_user)
-    response = api_client.patch(reverse('audit_item_update', kwargs={'pk': item.id}), data=data, format='json')
+    response = api_client.patch(reverse('audit_item_update', kwargs={'pk': item.id}), data=xml_data, content_type='application/xml')
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
     # assigned auditor should succeed
     api_client.force_authenticate(user=auditor_user)
-    response = api_client.patch(reverse('audit_item_update', kwargs={'pk': item.id}), data=data, format='json')
+    response = api_client.patch(reverse('audit_item_update', kwargs={'pk': item.id}), data=xml_data, content_type='application/xml')
     assert response.status_code == status.HTTP_200_OK
     item.refresh_from_db()
     assert item.verification == "verified"

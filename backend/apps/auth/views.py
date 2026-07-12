@@ -18,11 +18,12 @@ def _generate_auth_response(user):
     refresh = RefreshToken.for_user(user)
     access = refresh.access_token
     
+    import datetime
     # Store refresh token hash in DB
     RefreshTokenModel.objects.create(
         user=user,
         token_hash=_hash_token(str(refresh)),
-        expires_at=timezone.datetime.fromtimestamp(refresh['exp'], tz=timezone.utc)
+        expires_at=datetime.datetime.fromtimestamp(refresh['exp'], tz=datetime.timezone.utc)
     )
     
     return Response({
