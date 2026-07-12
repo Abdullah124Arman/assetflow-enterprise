@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Top Level Menu -->
+        <menuitem id="menu_assetflow_root"
+                  name="AssetFlow"
+                  web_icon="assetflow,static/description/icon.png"
+                  sequence="10"/>
+
+        <!-- Main Categories -->
+        <menuitem id="menu_assetflow_dashboard"
+                  name="Dashboard"
+                  parent="menu_assetflow_root"
+                  sequence="10"/>
+
+        <menuitem id="menu_assetflow_assets_main"
+                  name="Assets"
+                  parent="menu_assetflow_root"
+                  sequence="20"/>
+
+        <menuitem id="menu_assetflow_operations"
+                  name="Operations"
+                  parent="menu_assetflow_root"
+                  sequence="30"/>
+
+        <menuitem id="menu_assetflow_org_setup"
+                  name="Organization Setup"
+                  parent="menu_assetflow_root"
+                  sequence="100"
+                  groups="group_assetflow_admin"/>
+    </data>
+</odoo>

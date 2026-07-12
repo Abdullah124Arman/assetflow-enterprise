@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Category Form View -->
+        <record id="view_assetflow_category_form" model="ir.ui.view">
+            <field name="name">assetflow.category.form</field>
+            <field name="model">assetflow.category</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="description"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Category Tree View -->
+        <record id="view_assetflow_category_tree" model="ir.ui.view">
+            <field name="name">assetflow.category.tree</field>
+            <field name="model">assetflow.category</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Category Action -->
+        <record id="action_assetflow_category" model="ir.actions.act_window">
+            <field name="name">Asset Categories</field>
+            <field name="res_model">assetflow.category</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_assetflow_categories"
+                  name="Categories"
+                  parent="menu_assetflow_org_setup"
+                  action="action_assetflow_category"
+                  sequence="30"/>
+    </data>
+</odoo>
