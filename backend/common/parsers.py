@@ -1,15 +1,17 @@
 import os
 from django.conf import settings
 from rest_framework.exceptions import ParseError
-from rest_framework_xml.parsers import XMLParser
+from rest_framework.parsers import BaseParser
 from lxml import etree
 import xmlschema
+from common.xml_utils import xml_to_dict
 
-class AssetFlowXMLParser(XMLParser):
+class AssetFlowXMLParser(BaseParser):
     """
     Custom XML Parser that:
     1. Is XXE-safe (resolve_entities=False, no_network=True, load_dtd=False) via lxml
     2. Validates incoming XML against XSD schemas in /schemas before business logic
+    3. Converts parsed XML into a clean Python dictionary
     """
     media_type = 'application/xml'
 
@@ -33,6 +35,5 @@ class AssetFlowXMLParser(XMLParser):
             except xmlschema.XMLSchemaValidationError as exc:
                 raise ParseError(f'XML schema validation error - {exc}')
         
-        # 3. Reset stream and use DRF XML base parser to convert safely into dict
-        stream.seek(0)
-        return super().parse(stream, media_type, parser_context)
+        # 3. Convert etree to dict
+        return xml_to_dict(root)
