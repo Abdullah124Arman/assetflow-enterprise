@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { initialAssets, initialBookings, initialAudit } from '../api/mockData';
-import { api, buildXMLPayload } from '../api/client';
+import { api } from '../api/client';
 
 const DataContext = createContext(null);
 
@@ -9,17 +9,44 @@ export function DataProvider({ children }) {
     return localStorage.getItem('assetflow_auth') === 'true';
   });
 
+  const [currentUser, setCurrentUser] = useState(() => {
+    const token = localStorage.getItem('assetflow_token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return {
+          role: payload.role,
+          department_id: payload.department_id,
+        };
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  });
+
   const login = async (email, password) => {
     try {
-      const xmlPayload = buildXMLPayload('auth_request', { email, password });
-      const response = await api.post('/auth/login', xmlPayload);
+      const xmlPayload = `<auth_request><email>${email}</email><password>${password}</password></auth_request>`;
+      const responseDoc = await api.post('/auth/login', xmlPayload);
       
       // Extract the access token based on auth_response.xsd schema
-      const token = response.response?.data?.auth?.access_token;
+      const token = responseDoc.querySelector('access_token')?.textContent;
       if (token) {
         setIsAuthenticated(true);
         localStorage.setItem('assetflow_auth', 'true');
         localStorage.setItem('assetflow_token', token);
+        
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          setCurrentUser({
+            role: payload.role,
+            department_id: payload.department_id,
+          });
+        } catch (e) {
+          console.error('Failed to parse token payload:', e);
+        }
+
         return true;
       }
       return false;
@@ -31,6 +58,7 @@ export function DataProvider({ children }) {
 
   const logout = () => {
     setIsAuthenticated(false);
+    setCurrentUser(null);
     localStorage.removeItem('assetflow_auth');
     localStorage.removeItem('assetflow_token');
   };
@@ -56,6 +84,7 @@ export function DataProvider({ children }) {
   return (
     <DataContext.Provider value={{
       isAuthenticated,
+      currentUser,
       login,
       logout,
       assets,

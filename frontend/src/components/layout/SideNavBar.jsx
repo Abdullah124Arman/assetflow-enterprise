@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Building2, Package, ArrowRightLeft, CalendarClock, Wrench, ShieldCheck, BarChart3, Activity } from 'lucide-react';
+import { useData } from '../../providers/DataProvider';
 
 const NAV_ITEMS = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -15,6 +16,8 @@ const NAV_ITEMS = [
 ];
 
 export default function SideNavBar() {
+  const { currentUser } = useData();
+
   return (
     <aside className="w-64 bg-secondary text-white flex flex-col shrink-0 h-screen">
       <div className="h-16 flex items-center px-6 border-b border-white/10 shrink-0">
@@ -23,6 +26,10 @@ export default function SideNavBar() {
       <nav className="flex-1 overflow-y-auto py-4">
         <ul className="flex flex-col gap-1 px-3">
           {NAV_ITEMS.map((item) => {
+            // Hide Organization Setup unless role is admin
+            if (item.path === '/org-setup' && currentUser?.role !== 'admin') {
+              return null;
+            }
             const Icon = item.icon;
             return (
               <li key={item.path}>
