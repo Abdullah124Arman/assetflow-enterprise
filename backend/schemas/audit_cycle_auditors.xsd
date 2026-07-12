@@ -1,0 +1,15 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="audit_cycle_auditors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="user_ids">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="user_id" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

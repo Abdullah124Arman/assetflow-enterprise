@@ -1,0 +1,27 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="audit_cycle">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="id" type="xs:string" minOccurs="0"/>
+        <xs:element name="name" type="xs:string"/>
+        <xs:element name="scope_department_id" type="xs:string" minOccurs="0"/>
+        <xs:element name="scope_location" type="xs:string" minOccurs="0"/>
+        <xs:element name="start_date" type="xs:date"/>
+        <xs:element name="end_date" type="xs:date"/>
+        <xs:element name="status" type="xs:string" minOccurs="0"/>
+        <xs:element name="created_by" type="xs:string" minOccurs="0"/>
+        <xs:element name="closed_at" type="xs:dateTime" minOccurs="0"/>
+        <xs:element name="created_at" type="xs:dateTime" minOccurs="0"/>
+        
+        <xs:element name="auditors" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="user_id" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

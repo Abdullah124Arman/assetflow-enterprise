@@ -1,0 +1,24 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="audit_item">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="id" type="xs:string" minOccurs="0"/>
+        <xs:element name="audit_cycle_id" type="xs:string" minOccurs="0"/>
+        <xs:element name="asset_id" type="xs:string" minOccurs="0"/>
+        <xs:element name="verification">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="pending"/>
+              <xs:enumeration value="verified"/>
+              <xs:enumeration value="missing"/>
+              <xs:enumeration value="damaged"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="notes" type="xs:string" minOccurs="0"/>
+        <xs:element name="verified_by" type="xs:string" minOccurs="0"/>
+        <xs:element name="verified_at" type="xs:dateTime" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
