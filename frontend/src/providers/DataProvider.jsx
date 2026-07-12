@@ -4,6 +4,24 @@ import { initialAssets, initialBookings, initialMaintenance, initialAudit } from
 const DataContext = createContext(null);
 
 export function DataProvider({ children }) {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('assetflow_auth') === 'true';
+  });
+
+  const login = (email, password) => {
+    if (email === 'admin@assetflow.com' && password === 'password') {
+      setIsAuthenticated(true);
+      localStorage.setItem('assetflow_auth', 'true');
+      return true;
+    }
+    return false;
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('assetflow_auth');
+  };
+
   const [assets, setAssets] = useState(() => {
     const saved = localStorage.getItem('assetflow_assets');
     return saved ? JSON.parse(saved) : initialAssets;
@@ -24,8 +42,13 @@ export function DataProvider({ children }) {
 
   return (
     <DataContext.Provider value={{
-      assets, setAssets,
-      maintenance, setMaintenance,
+      isAuthenticated,
+      login,
+      logout,
+      assets,
+      setAssets,
+      maintenance,
+      setMaintenance,
       initialBookings,
       initialAudit
     }}>

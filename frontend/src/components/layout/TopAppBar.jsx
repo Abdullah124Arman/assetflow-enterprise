@@ -1,7 +1,9 @@
 import React from 'react';
 import { Search, Bell, UserCircle } from 'lucide-react';
+import { useData } from '../../providers/DataProvider';
 
 export default function TopAppBar() {
+  const { logout } = useData();
   return (
     <header className="h-16 bg-surface border-b border-border flex items-center justify-between px-6 shrink-0">
       <div className="flex-1 flex items-center">
@@ -25,6 +27,12 @@ export default function TopAppBar() {
             <p className="font-semibold text-secondary">A. Arman</p>
             <p className="text-xs text-tertiary">Administrator</p>
           </div>
+          <button 
+            onClick={logout}
+            className="ml-4 text-xs font-semibold text-primary hover:underline"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </header>
