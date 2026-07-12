@@ -23,7 +23,7 @@ class AuditCycle(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     status = models.CharField(max_length=20, choices=AuditCycleStatus.choices, default=AuditCycleStatus.OPEN)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_audit_cycles')
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_audit_cycles', db_column='created_by')
     closed_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     auditors = models.ManyToManyField(User, through='AuditAuditor', related_name='assigned_audit_cycles')
@@ -32,6 +32,7 @@ class AuditCycle(models.Model):
         db_table = 'audit_cycles'
 
 class AuditAuditor(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     audit_cycle = models.ForeignKey(AuditCycle, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -45,7 +46,7 @@ class AuditItem(models.Model):
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE, related_name='audit_items')
     verification = models.CharField(max_length=20, choices=AuditVerification.choices, default=AuditVerification.PENDING)
     notes = models.TextField(null=True, blank=True)
-    verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='verified_audit_items')
+    verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='verified_audit_items', db_column='verified_by')
     verified_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
