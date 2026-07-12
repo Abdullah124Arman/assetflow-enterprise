@@ -7,15 +7,25 @@ export default function Login() {
   const [email, setEmail] = useState('admin@assetflow.com');
   const [password, setPassword] = useState('password');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useData();
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (login(email, password)) {
-      navigate('/dashboard');
-    } else {
-      setError('Invalid email or password.');
+    setError('');
+    setIsLoading(true);
+    try {
+      const success = await login(email, password);
+      if (success) {
+        navigate('/dashboard');
+      } else {
+        setError('Invalid email or password.');
+      }
+    } catch (err) {
+      setError(err.message || 'Connection failed. Is the backend running?');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -51,7 +61,9 @@ export default function Login() {
 
           {error && <p className="text-sm font-medium text-error">{error}</p>}
 
-          <Button type="submit" className="w-full py-2.5 mt-2 text-base">Sign In</Button>
+          <Button type="submit" disabled={isLoading} className="w-full py-2.5 mt-2 text-base">
+            {isLoading ? 'Signing In...' : 'Sign In'}
+          </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-tertiary">

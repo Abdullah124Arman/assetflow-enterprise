@@ -30,6 +30,11 @@ async function xmlFetch(endpoint, options = {}) {
     ...options.headers,
   };
 
+  const token = localStorage.getItem('assetflow_token');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   if (options.body) {
     headers['Content-Type'] = 'application/xml';
   }
