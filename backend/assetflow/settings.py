@@ -134,3 +134,9 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'sub',
     'TOKEN_OBTAIN_SERIALIZER': None,
 }
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+}
