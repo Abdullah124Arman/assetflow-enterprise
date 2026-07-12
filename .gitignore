@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /docs/
 venv
 .env
@@ -20,3 +21,6 @@ staticfiles/
 
 .DS_Store
 Thumbs.db
+
+AssetFlow_*.md
+>>>>>>> 2f01bf0658616fbbaca789ed2a98ddfc972aae80

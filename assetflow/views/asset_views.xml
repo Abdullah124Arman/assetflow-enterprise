@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Asset Form View -->
+        <record id="view_assetflow_asset_form" model="ir.ui.view">
+            <field name="name">assetflow.asset.form</field>
+            <field name="model">assetflow.asset</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <field name="status" widget="statusbar" statusbar_visible="available,allocated,maintenance"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="asset_tag" readonly="1"/> - <field name="name" placeholder="Asset Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="category_id"/>
+                                <field name="serial_number"/>
+                                <field name="location"/>
+                            </group>
+                            <group>
+                                <field name="condition"/>
+                                <field name="is_shared_resource" widget="boolean_toggle"/>
+                                <field name="current_employee_id" attrs="{'invisible': [('status', '!=', 'allocated')]}" readonly="1"/>
+                                <field name="current_department_id" attrs="{'invisible': [('status', '!=', 'allocated')]}" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Financial Details">
+                                <group>
+                                    <field name="acquisition_date"/>
+                                    <field name="acquisition_cost"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Asset Tree View -->
+        <record id="view_assetflow_asset_tree" model="ir.ui.view">
+            <field name="name">assetflow.asset.tree</field>
+            <field name="model">assetflow.asset</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="asset_tag"/>
+                    <field name="name"/>
+                    <field name="category_id"/>
+                    <field name="status" widget="badge" decoration-success="status=='available'" decoration-info="status=='allocated'" decoration-warning="status=='maintenance'"/>
+                    <field name="location"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Asset Search View -->
+        <record id="view_assetflow_asset_search" model="ir.ui.view">
+            <field name="name">assetflow.asset.search</field>
+            <field name="model">assetflow.asset</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="asset_tag"/>
+                    <field name="serial_number"/>
+                    <filter string="Available" name="available" domain="[('status', '=', 'available')]"/>
+                    <filter string="Allocated" name="allocated" domain="[('status', '=', 'allocated')]"/>
+                    <filter string="Under Maintenance" name="maintenance" domain="[('status', '=', 'maintenance')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Category" name="group_by_category" context="{'group_by':'category_id'}"/>
+                        <filter string="Status" name="group_by_status" context="{'group_by':'status'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Asset Action -->
+        <record id="action_assetflow_asset" model="ir.actions.act_window">
+            <field name="name">Asset Directory</field>
+            <field name="res_model">assetflow.asset</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_assetflow_asset_search"/>
+        </record>
+
+        <menuitem id="menu_assetflow_assets"
+                  name="Asset Directory"
+                  parent="menu_assetflow_assets_main"
+                  action="action_assetflow_asset"
+                  sequence="10"/>
+    </data>
+</odoo>
