@@ -1,15 +1,33 @@
-# AssetFlow - Enterprise Asset & Resource Management System
+# 🚀 AssetFlow Enterprise
 
-## Overview
-AssetFlow is a centralized ERP module for tracking, allocating, and maintaining physical assets and shared resources. It is industry-agnostic (designed for offices, schools, hospitals, factories, agencies) and replaces spreadsheets and manual tracking with structured lifecycles, resource booking, maintenance kanban boards, and audit workflows. 
+![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+![Version](https://img.shields.io/badge/Version-v2.0.1-blue)
+![License](https://img.shields.io/badge/License-MIT-blue)
+
+AssetFlow Enterprise is a comprehensive, modern, and highly scalable **Asset Management System** tailored for large organizations. Built with a robust Django backend and a lightning-fast React frontend, it empowers teams to meticulously track, allocate, maintain, and audit organizational assets with ease.
 
 AssetFlow provides a **single source of truth** for asset states and prevents issues like double-allocations and booking overlaps through strict database-level constraints.
 
 ---
 
-## 🛠 Technology Stack
+## 🛠 Tech Stack
+
+### Frontend
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
+
+- **Framework**: React 18 + Vite (SPA) + Tailwind CSS
+- **Data Layer**: Custom XML parsing (`DOMParser` / `fast-xml-parser`) for all API fetch operations.
 
 ### Backend
+![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=green)
+![Django REST](https://img.shields.io/badge/Django_REST-ff1709?style=for-the-badge&logo=django&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![XML API](https://img.shields.io/badge/XML_API-F37626?style=for-the-badge)
+![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white)
+
 - **Language & Framework**: Python 3.12, Django 5 + Django REST Framework (DRF)
 - **API Paradigm**: **XML-only REST API** (JSON is explicitly disabled). Every request and response uses XML payloads.
 - **Validation**: Payload validation against predefined **XSD schemas** using `lxml` and `xmlschema` before reaching business logic.
@@ -18,10 +36,6 @@ AssetFlow provides a **single source of truth** for asset states and prevents is
 - **Background Jobs**: Celery + Celery Beat / Custom Django scheduler for overdue checks and booking reminders.
 - **Real-time**: WebSocket (Django Channels) for real-time notifications.
 - **Security**: XXE protection (entities/network disabled in `lxml`), rate limiting, parameterised queries.
-
-### Frontend
-- **Framework**: React 18 + Vite (SPA) + Tailwind CSS
-- **Data Layer**: Custom XML parsing (`DOMParser` / `fast-xml-parser`) for all API fetch operations.
 
 ---
 
