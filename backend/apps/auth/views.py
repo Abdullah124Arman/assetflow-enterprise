@@ -17,7 +17,14 @@ def _hash_token(token_str):
 
 def _generate_auth_response(user):
     refresh = RefreshToken.for_user(user)
+    refresh['role'] = user.role
+    if user.department_id:
+        refresh['department_id'] = str(user.department_id)
+        
     access = refresh.access_token
+    access['role'] = user.role
+    if user.department_id:
+        access['department_id'] = str(user.department_id)
     
     import datetime
     # Store refresh token hash in DB

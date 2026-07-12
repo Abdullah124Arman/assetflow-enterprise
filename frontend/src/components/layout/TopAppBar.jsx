@@ -3,7 +3,7 @@ import { Search, Bell, UserCircle } from 'lucide-react';
 import { useData } from '../../providers/DataProvider';
 
 export default function TopAppBar() {
-  const { logout } = useData();
+  const { logout, currentUser } = useData();
   return (
     <header className="h-16 bg-surface border-b border-border flex items-center justify-between px-6 shrink-0">
       <div className="flex-1 flex items-center">
@@ -24,8 +24,8 @@ export default function TopAppBar() {
         <div className="flex items-center gap-2 pl-4 border-l border-border">
           <UserCircle className="w-8 h-8 text-tertiary" />
           <div className="text-sm">
-            <p className="font-semibold text-secondary">A. Arman</p>
-            <p className="text-xs text-tertiary">Administrator</p>
+            <p className="font-semibold text-secondary">Current User</p>
+            <p className="text-xs text-tertiary uppercase">{currentUser?.role || 'Guest'}</p>
           </div>
           <button 
             onClick={logout}
