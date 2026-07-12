@@ -26,6 +26,20 @@ def xml_error(code, message, details=None, status_code=status.HTTP_400_BAD_REQUE
 class AuditCycleCreateView(views.APIView):
     permission_classes = [IsAdminOrAssetManagerOrReadOnly]
 
+    def get(self, request):
+        cycles = AuditCycle.objects.all().order_by('-start_date')
+        
+        # We need to build XML response manually or use DRF serializer
+        # Since this API uses XML, we'll return serializer data which our custom renderer handles
+        serializer = AuditCycleSerializer(cycles, many=True)
+        # We need to fetch items for active cycles to render on frontend
+        data = serializer.data
+        for cycle_data in data:
+            items = AuditItem.objects.filter(audit_cycle_id=cycle_data['id']).select_related('asset')
+            cycle_data['items'] = AuditItemSerializer(items, many=True).data
+            
+        return Response({'data': data})
+
     def post(self, request):
         data = request.data
         
